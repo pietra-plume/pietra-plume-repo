@@ -76,8 +76,9 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({ onDesignGenerated })
         });
       }
 
-    } catch (err) {
-      setError("We couldn't generate the visualization at this moment. Please try again.");
+    } catch (err: any) {
+      const msg = err.message || "We couldn't generate the visualization at this moment.";
+      setError(msg.includes("API Key") ? msg : "We couldn't generate the visualization at this moment. Please try again.");
       console.error(err);
     } finally {
       setIsGenerating(false);
@@ -285,8 +286,8 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({ onDesignGenerated })
                     </div>
                 )}
                 {error && (
-                     <div className="bg-red-50 p-4 rounded border-l-4 border-red-500">
-                        <p className="text-red-600 text-sm">{error}</p>
+                     <div className="bg-red-50 p-4 rounded border-l-4 border-red-500 animate-in slide-in-from-bottom-2">
+                        <p className="text-red-600 text-sm font-medium">{error}</p>
                     </div>
                 )}
             </div>

@@ -249,9 +249,13 @@ export const SmartPlanner: React.FC<SmartPlannerProps> = ({ studioDesign }) => {
       
       setItemsOnCanvas(newLayout);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setAiReasoning("Could not generate layout. Try dragging items manually.");
+      if (err.message && err.message.includes("API Key")) {
+         setAiReasoning("AI Layout unavailable: API Key missing.");
+      } else {
+         setAiReasoning("Could not generate layout. Try dragging items manually.");
+      }
     } finally {
       setIsGenerating(false);
     }

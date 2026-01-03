@@ -1,9 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserSelection, RoomType, Artist, LayoutSuggestion, FurnitureItem } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAI = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please configure your API_KEY to use AI features.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export const generateRoomImage = async (roomType: RoomType, selections: UserSelection, inspiration?: Artist | null): Promise<string> => {
+  const ai = getAI();
   // Construct a vivid prompt from the user selections
   const attributes = Object.values(selections).join(', ');
   
@@ -47,6 +54,7 @@ export const generateRoomImage = async (roomType: RoomType, selections: UserSele
 };
 
 export const generateDesignSummary = async (roomType: RoomType, selections: UserSelection, inspiration?: Artist | null): Promise<string> => {
+  const ai = getAI();
   const attributes = Object.values(selections).join(', ');
   
   let prompt = `Act as a senior interior designer at Pietra Plume. 
@@ -67,7 +75,7 @@ export const generateDesignSummary = async (roomType: RoomType, selections: User
     return response.text || "Experience the perfect blend of style and function.";
   } catch (error) {
     console.error("Gemini Text Generation Error:", error);
-    return "Your custom design awaits execution.";
+    throw error;
   }
 };
 
@@ -78,6 +86,7 @@ export const generateLayoutSuggestion = async (
   items: FurnitureItem[],
   colorPalette: string
 ): Promise<LayoutSuggestion> => {
+  const ai = getAI();
   const itemNames = items.map(i => i.name).join(', ');
   
   const prompt = `
@@ -128,16 +137,7 @@ export const generateLayoutSuggestion = async (
     return JSON.parse(text) as LayoutSuggestion;
   } catch (error) {
     console.error("Gemini Layout Generation Error:", error);
-    // Fallback if AI fails
-    return {
-      items: items.map((item, idx) => ({
-        name: item.name,
-        x: (idx * 10) % 80, 
-        y: (idx * 10) % 80,
-        rotation: 0
-      })),
-      reasoning: "AI generation failed, providing default staggered layout."
-    };
+    throw error;
   }
 };
 
@@ -154,9 +154,14 @@ export const generateVeoVideo = async (
             await win.aistudio.openSelectKey();
         }
     }
+    
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      throw new Error("API Key is missing. Please set the API_KEY environment variable.");
+    }
 
     // MANDATORY: Create fresh instance right before call as per guidelines
-    const veoAi = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const veoAi = new GoogleGenAI({ apiKey });
 
     // Extract mimeType and clean base64 data
     const matches = imageBase64.match(/^data:(.+);base64,(.+)$/);
@@ -192,7 +197,7 @@ export const generateVeoVideo = async (
         throw new Error("No video URI returned from Veo.");
     }
 
-    const videoResponse = await fetch(`${videoUri}&key=${process.env.API_KEY}`);
+    const videoResponse = await fetch(`${videoUri}&key=${apiKey}`);
     if (!videoResponse.ok) {
         throw new Error("Failed to download video content.");
     }
@@ -203,6 +208,7 @@ export const generateVeoVideo = async (
 
 export const getChatResponse = async (history: {role: string, parts: {text: string}[]}[], message: string): Promise<string> => {
   try {
+    const ai = getAI();
     const chat = ai.chats.create({
       model: 'gemini-2.5-flash',
       history: history,
@@ -230,6 +236,6 @@ export const getChatResponse = async (history: {role: string, parts: {text: stri
     return result.text || "I apologize, I didn't catch that. Could you rephrase?";
   } catch (error) {
     console.error("Chat Error:", error);
-    return "I'm having a brief creative block. Please try again in a moment.";
+    throw error;
   }
 };

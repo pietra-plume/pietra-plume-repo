@@ -45,9 +45,13 @@ export const AIChatbot: React.FC = () => {
       
       const botMsg: Message = { id: (Date.now() + 1).toString(), role: 'model', text: responseText };
       setMessages(prev => [...prev, botMsg]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat error", error);
-      const errorMsg: Message = { id: (Date.now() + 1).toString(), role: 'model', text: "I'm having trouble connecting to the design studio right now." };
+      let errorText = "I'm having trouble connecting to the design studio right now.";
+      if (error.message && error.message.includes("API Key")) {
+          errorText = "I cannot reply right now because the API Key is missing. Please check your configuration.";
+      }
+      const errorMsg: Message = { id: (Date.now() + 1).toString(), role: 'model', text: errorText };
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsTyping(false);
