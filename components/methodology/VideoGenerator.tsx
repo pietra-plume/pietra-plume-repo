@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { generateVeoVideo } from '../services/geminiService';
+import { generateVeoVideo } from '../../services/geminiService';
 import { Video, Upload, Play, Film, Loader2, Image as ImageIcon, AlertCircle, RectangleHorizontal, Key, ExternalLink } from 'lucide-react';
 
 interface VideoGeneratorProps {

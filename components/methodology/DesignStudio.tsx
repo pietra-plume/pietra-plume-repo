@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ROOM_CONFIGS, ART_INSPIRATIONS } from '../constants';
-import { RoomType, UserSelection, CategoryOptions, Artist, GeneratedDesign } from '../types';
-import { generateRoomImage, generateDesignSummary } from '../services/geminiService';
+import { ROOM_CONFIGS, ART_INSPIRATIONS } from '../../constants';
+import { RoomType, UserSelection, CategoryOptions, Artist, GeneratedDesign } from '../../types';
+import { generateRoomImage, generateDesignSummary } from '../../services/geminiService';
 import { Loader2, Wand2, RefreshCw, ChevronRight, Palette, Info } from 'lucide-react';
 
 interface DesignStudioProps {

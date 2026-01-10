@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Check, Loader2 } from 'lucide-react';
-import { GOOGLE_SHEET_WEBHOOK_URL } from '../constants';
+import { GOOGLE_SHEET_WEBHOOK_URL } from '../../constants';
 
 interface ConsultationModalProps {
   onClose: () => void;

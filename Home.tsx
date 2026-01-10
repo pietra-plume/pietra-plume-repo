@@ -9,7 +9,7 @@ import TheDeparture from './components/TheDeparture';
 import Footer from './components/Footer';
 import { GOOGLE_SHEET_WEBHOOK_URL } from './constants';
 
-const App: React.FC = () => {
+const Home: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -160,4 +160,4 @@ const App: React.FC = () => {
   );
 }
 
-export default App;
+export default Home;

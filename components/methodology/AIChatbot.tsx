@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Sparkles, User, Bot } from 'lucide-react';
-import { getChatResponse } from '../services/geminiService';
+import { getChatResponse } from '../../services/geminiService';
 
 interface Message {
   id: string;

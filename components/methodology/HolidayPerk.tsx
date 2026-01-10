@@ -15,21 +15,21 @@ const destinations: Destination[] = [
     name: 'Dubai', 
     coords: { top: '30%', left: '20%' }, 
     description: 'Experience futuristic luxury, desert safaris, and world-class shopping.',
-    image: '/assets/dest-dubai.jpg'
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-043.jpg'
   },
   { 
     id: 'maldives', 
     name: 'Maldives', 
     coords: { top: '65%', left: '30%' }, 
     description: 'Unwind in private overwater villas surrounded by crystal clear lagoons.',
-    image: '/assets/dest-maldives.jpg'
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-044.jpg'
   },
   { 
     id: 'bali', 
     name: 'Bali', 
     coords: { top: '75%', left: '80%' }, 
     description: 'Immerse yourself in tropical jungles, serene temples, and vibrant culture.',
-    image: '/assets/dest-bali.jpg'
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-045.jpg'
   }
 ];
 
@@ -41,7 +41,7 @@ export const HolidayPerk: React.FC = () => {
       {/* Background Ambience */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <img 
-          src="/assets/texture-map.jpg"
+          src="https://ik.imagekit.io/pietraplume/images/pietra-asset-042.jpg"
           alt="World Map Texture" 
           className="w-full h-full object-cover grayscale"
         />

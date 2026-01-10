@@ -1,165 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Phone, Instagram, Facebook, Linkedin, LogIn, Activity, Sparkles, ChevronRight } from 'lucide-react';
-import { BrandLogo } from './BrandLogo';
+import React, { useState, useEffect, useCallback } from 'react';
 
-interface NavbarProps {
-  onBook: () => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ onBook }) => {
+const Navbar: React.FC = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScrollListener = () => {
-      setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScrollListener);
-    return () => window.removeEventListener('scroll', handleScrollListener);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleScroll = (e: React.MouseEvent, id: string) => {
+  /**
+   * Abstraction of the smooth scroll logic to ensure consistent behavior 
+   * across all navigation links with a fixed header offset.
+   */
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
+    setIsMenuOpen(false); // Close mobile menu if open
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      const headerOffset = 80; // Adjusted for the scrolled navbar height
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+
+      // Update URL hash without causing a page jump
+      window.history.pushState(null, '', `#${targetId}`);
+    } else {
+      console.warn(`Navigation target #${targetId} not found.`);
     }
-  };
+  }, []);
 
   const navLinks = [
-    { id: 'process', label: 'Process' },
-    { id: 'portfolio', label: 'Portfolio' },
-    { id: 'studio', label: 'Studio' },
-    { id: 'veo-studio', label: 'Video' },
-    { id: 'planner', label: 'Planner' },
-    { id: 'holiday', label: 'Holiday' },
+    { label: 'About Us', id: 'about-us' },
+    { label: 'Methodology', id: 'philosophy' },
+    { label: 'The Path', id: 'path' },
+    { label: 'The Departure', id: 'departure' },
+    { label: 'Services', id: 'services' },
+    { label: 'Portfolio', id: 'portfolio' },
+    // Oracle link removed as requested
   ];
 
   return (
     <>
-      <nav 
-        className={`fixed w-full z-50 transition-all duration-300 ${
-          scrolled || isMenuOpen ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-stone-100' : 'bg-transparent'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <div className="flex-shrink-0 relative z-50">
-               <BrandLogo 
-                  colorMode={scrolled || isMenuOpen ? 'dark' : 'light'} 
-                  variant="horizontal" 
-               />
-            </div>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled || isMenuOpen ? 'bg-white/95 backdrop-blur-md py-4 shadow-sm border-b border-stone-100' : 'bg-transparent py-8 text-white'
+      }`}>
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+          {/* Brand Logo */}
+          <div 
+            className="flex flex-col items-center cursor-pointer group relative z-50" 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <span className={`serif text-2xl tracking-[0.2em] font-light group-hover:opacity-70 transition-all ${isMenuOpen || isScrolled ? 'text-stone-900' : 'text-white'}`}>
+              PIETRA & PLUME
+            </span>
+            <span className={`text-[9px] tracking-[0.35em] uppercase opacity-60 text-center ${isMenuOpen || isScrolled ? 'text-stone-600' : 'text-stone-200'}`}>
+              The art of possible
+            </span>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-8">
+            <div className={`flex space-x-6 text-[10px] tracking-widest uppercase font-light ${isScrolled ? 'text-stone-700' : 'text-white'}`}>
               {navLinks.map((link) => (
                 <a 
                   key={link.id}
                   href={`#${link.id}`} 
-                  onClick={(e) => handleScroll(e, link.id)}
-                  className={`transition-colors text-xs font-bold tracking-widest uppercase ${
-                    scrolled ? 'text-stone-600 hover:text-amber-600' : 'text-stone-300 hover:text-white'
-                  }`}
+                  onClick={(e) => handleNavClick(e, link.id)}
+                  className="relative py-1 group overflow-hidden"
                 >
-                  {link.label}
+                  <span className="relative z-10 hover:text-stone-400 transition-colors duration-300">
+                    {link.label}
+                  </span>
+                  <span className={`absolute bottom-0 left-0 w-full h-px ${isScrolled ? 'bg-stone-800' : 'bg-white'} scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></span>
                 </a>
               ))}
-              <button 
-                onClick={onBook}
-                className="bg-stone-900 text-white px-5 py-2.5 rounded-sm hover:bg-amber-600 transition-colors duration-300 flex items-center gap-2 text-xs font-bold tracking-widest uppercase shadow-lg shadow-stone-900/10"
-              >
-                <Phone size={14} />
-                <span>Consult</span>
-              </button>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center z-50">
-              <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`transition-colors ${isMenuOpen || scrolled ? 'text-stone-900' : 'text-white'}`}
-              >
-                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
-            </div>
+            <button 
+              onClick={(e) => {
+                const contact = document.getElementById('contact');
+                if (contact) {
+                  const offset = 80;
+                  const pos = contact.getBoundingClientRect().top + window.pageYOffset - offset;
+                  window.scrollTo({ top: pos, behavior: 'smooth' });
+                }
+              }}
+              className={`ml-4 border px-6 py-2 text-xs tracking-widest uppercase transition-all duration-500 font-medium ${
+                isScrolled 
+                ? 'border-stone-800 text-stone-800 hover:bg-stone-800 hover:text-white' 
+                : 'border-white text-white hover:bg-white hover:text-stone-900'
+              }`}
+            >
+              Enquire
+            </button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <div className="lg:hidden relative z-50">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`${isScrolled || isMenuOpen ? 'text-stone-800' : 'text-white'} p-2 transition-colors duration-300`}
+            >
+              {isMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
       </nav>
 
       {/* Mobile Menu Overlay */}
-      <div 
-        className={`fixed inset-0 z-40 bg-stone-50 transform transition-transform duration-500 ease-in-out md:hidden flex flex-col ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="flex-1 flex flex-col pt-24 px-6 overflow-y-auto">
-            {/* Quick Actions - Client Zone */}
-            <div className="mb-8 p-4 bg-stone-100 rounded border border-stone-200">
-                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <Activity size={14} /> Client Zone
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                    <button className="flex flex-col items-center justify-center bg-white p-3 rounded shadow-sm border border-stone-100 active:bg-amber-50">
-                        <Activity size={20} className="text-amber-600 mb-1" />
-                        <span className="text-[10px] font-bold uppercase text-stone-700">Track Order</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center bg-white p-3 rounded shadow-sm border border-stone-100 active:bg-amber-50">
-                        <LogIn size={20} className="text-stone-600 mb-1" />
-                        <span className="text-[10px] font-bold uppercase text-stone-700">Client Login</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Main Navigation */}
-            <div className="space-y-6 mb-10">
-                {navLinks.map((link) => (
-                    <a 
-                        key={link.id}
-                        href={`#${link.id}`}
-                        onClick={(e) => handleScroll(e, link.id)}
-                        className="flex items-center justify-between text-2xl font-serif text-stone-900 border-b border-stone-200 pb-2 active:text-amber-600 group"
-                    >
-                        <span>{link.label}</span>
-                        <ChevronRight className="text-stone-300 group-active:text-amber-600" size={20} />
-                    </a>
-                ))}
-            </div>
-
-            {/* Daily Inspiration */}
-            <div className="mb-8 relative overflow-hidden rounded-lg bg-stone-900 text-white p-6">
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Sparkles size={60} />
-                </div>
-                <h4 className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">Daily Muse</h4>
-                <p className="font-serif italic text-lg leading-relaxed mb-4">
-                    "Simplicity is the ultimate sophistication."
-                </p>
-                <p className="text-xs text-stone-400 uppercase tracking-wider">— Leonardo da Vinci</p>
-            </div>
-
-            {/* Footer Actions */}
-            <div className="mt-auto pb-8">
-                <button 
-                    onClick={() => {
-                        setIsMenuOpen(false);
-                        onBook();
-                    }}
-                    className="w-full py-4 bg-amber-600 text-white text-sm font-bold tracking-widest uppercase rounded-sm shadow-xl mb-6 flex items-center justify-center gap-2 active:bg-amber-700"
-                >
-                    <Phone size={16} /> Book Consultation
-                </button>
-
-                <div className="flex justify-center space-x-8 text-stone-400">
-                    <a href="#" className="hover:text-amber-600 transition-colors"><Instagram size={24} /></a>
-                    <a href="#" className="hover:text-amber-600 transition-colors"><Facebook size={24} /></a>
-                    <a href="#" className="hover:text-amber-600 transition-colors"><Linkedin size={24} /></a>
-                </div>
-            </div>
+      <div className={`fixed inset-0 bg-[#fdfcfb] z-40 transition-transform duration-500 ease-in-out lg:hidden flex flex-col justify-center items-center ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col space-y-8 text-center">
+          {navLinks.map((link) => (
+            <a 
+              key={link.id}
+              href={`#${link.id}`} 
+              onClick={(e) => handleNavClick(e, link.id)}
+              className="serif text-3xl text-stone-800 hover:text-stone-500 hover:italic transition-all duration-300"
+            >
+              {link.label}
+            </a>
+          ))}
+          <button 
+            onClick={(e) => {
+              setIsMenuOpen(false);
+              const contact = document.getElementById('contact');
+              if (contact) {
+                const offset = 80;
+                const pos = contact.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top: pos, behavior: 'smooth' });
+              }
+            }}
+            className="mt-8 border border-stone-800 text-stone-800 px-8 py-3 text-xs tracking-[0.3em] uppercase hover:bg-stone-800 hover:text-white transition-all duration-300"
+          >
+            Enquire Now
+          </button>
         </div>
       </div>
     </>
   );
 };
+
+export default Navbar;

@@ -1,241 +1,239 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { UserSelection, RoomType, Artist, LayoutSuggestion, FurnitureItem } from "../types";
+import { DesignProfile, UserSelection, Artist, PlannerItem } from "../types";
 
-const getAI = () => {
+const getAIClient = () => {
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
-    throw new Error("API Key is missing. Please configure your API_KEY to use AI features.");
+    throw new Error("API_KEY_MISSING");
   }
   return new GoogleGenAI({ apiKey });
 };
 
-export const generateRoomImage = async (roomType: RoomType, selections: UserSelection, inspiration?: Artist | null): Promise<string> => {
-  const ai = getAI();
-  // Construct a vivid prompt from the user selections
-  const attributes = Object.values(selections).join(', ');
-  
-  let prompt = `Photorealistic, high-end interior design photography of a ${roomType}.`;
-  
-  if (inspiration) {
-    prompt += ` The design is heavily inspired by the artistic style of ${inspiration.name} (${inspiration.period}). 
-    Key stylistic elements to include: ${inspiration.styleDescription}. 
-    Imagine if ${inspiration.name} designed this ${roomType} today.`;
-  }
-  
-  prompt += ` The design includes specific features selected by the client: ${attributes}. 
-  The overall atmosphere should be modern, corporate yet homely, 8k resolution, architectural digest style, cinematic lighting.
-  Ensure the perspective shows a wide angle view of the room highlighting the selected features and the artistic influence.`;
+export const getDesignOracleConsultation = async (prompt: string): Promise<DesignProfile> => {
+  const ai = getAIClient();
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: `Analyze the following design request and provide a professional architectural profile based on the Pietra & Plume methodology (balancing "Pietra" - the solid, heavy, historical, and "Plume" - the light, airy, modern). 
 
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [{ text: prompt }]
-      },
-      config: {
-         // flash-image doesn't support aspect ratio in config typically via generateContent, 
-         // but the prompt can guide it. We rely on the model default or text guidance.
-      }
-    });
+    Include a "sustainabilityScore" reflecting how eco-conscious the suggested materials and design would be (0-100), and a "lightingType" that best fits the atmospheric mood.
 
-    // Check for inline data (the image)
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        return `data:image/png;base64,${part.inlineData.data}`;
+    Request: "${prompt}"`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          archetype: { type: Type.STRING },
+          pietraRatio: { type: Type.NUMBER, description: "Degree of solid/stone elements (0-100)" },
+          plumeRatio: { type: Type.NUMBER, description: "Degree of light/airy elements (0-100)" },
+          palette: { 
+            type: Type.ARRAY, 
+            items: { type: Type.STRING },
+            description: "Hex codes for a sophisticated color palette"
+          },
+          materials: { 
+            type: Type.ARRAY, 
+            items: { type: Type.STRING },
+            description: "Suggested materials like 'Carrara Marble', 'Smoked Glass', etc."
+          },
+          philosophy: { type: Type.STRING, description: "A poetic 2-sentence description of the design intent." },
+          sustainabilityScore: { type: Type.NUMBER, description: "A score from 0 to 100 representing environmental impact awareness." },
+          lightingType: { type: Type.STRING, description: "The primary lighting approach, e.g., 'Diffused Natural', 'Dramatic Chiaroscuro', 'Ethereal Ambient'." }
+        },
+        required: ["archetype", "pietraRatio", "plumeRatio", "palette", "materials", "philosophy", "sustainabilityScore", "lightingType"]
       }
     }
-    
-    throw new Error("No image data returned from Gemini.");
+  });
 
-  } catch (error) {
-    console.error("Gemini Image Generation Error:", error);
-    throw error;
-  }
+  return JSON.parse(response.text);
 };
 
-export const generateDesignSummary = async (roomType: RoomType, selections: UserSelection, inspiration?: Artist | null): Promise<string> => {
-  const ai = getAI();
-  const attributes = Object.values(selections).join(', ');
-  
-  let prompt = `Act as a senior interior designer at Pietra Plume. 
-  Write a short, professional, and alluring description (max 80 words) of the ${roomType} design based on these choices: ${attributes}.`;
-  
-  if (inspiration) {
-    prompt += ` Mention that this design is inspired by the legendary style of ${inspiration.name}, incorporating elements like ${inspiration.styleDescription}.`;
-  }
-  
-  prompt += ` Emphasize the 'Art of Possible' and how this design fits a modern lifestyle.`;
+export const generateDesignMoodboard = async (profile: DesignProfile): Promise<string | null> => {
+  const ai = getAIClient();
+  const prompt = `A professional architectural mood board for a design concept titled "${profile.archetype}". 
+    The composition should feature high-end textures including ${profile.materials.join(', ')}. 
+    The color palette uses ${profile.palette.join(', ')}. 
+    The aesthetic is a balance of heavy, grounding stone (Pietra) and light, ethereal glass or air (Plume). 
+    Primary lighting: ${profile.lightingType}.
+    Luxury, minimal, photorealistic architecture, soft natural lighting.`;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-    
-    return response.text || "Experience the perfect blend of style and function.";
-  } catch (error) {
-    console.error("Gemini Text Generation Error:", error);
-    throw error;
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-image',
+    contents: {
+      parts: [
+        {
+          text: prompt,
+        },
+      ],
+    },
+    config: {
+      imageConfig: {
+        aspectRatio: "16:9",
+      },
+    },
+  });
+
+  for (const part of response.candidates[0].content.parts) {
+    if (part.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
+    }
   }
+
+  return null;
+};
+
+export const generateRoomImage = async (
+  roomType: string,
+  selections: UserSelection,
+  artist: Artist | null
+): Promise<string | null> => {
+  const ai = getAIClient();
+  let prompt = `Photorealistic architectural interior design of a ${roomType}. `;
+  
+  if (selections) {
+    Object.entries(selections).forEach(([category, value]) => {
+      prompt += `${category}: ${value}. `;
+    });
+  }
+
+  if (artist) {
+    prompt += `The design should be inspired by the artistic style of ${artist.name} (${artist.styleDescription}). `;
+  }
+
+  prompt += "High end, luxury, cinematic lighting, 8k resolution, interior design magazine style.";
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-image',
+    contents: {
+      parts: [{ text: prompt }],
+    },
+    config: {
+      imageConfig: {
+        aspectRatio: "16:9",
+      },
+    },
+  });
+
+  for (const part of response.candidates[0].content.parts) {
+    if (part.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
+    }
+  }
+  return null;
+};
+
+export const generateDesignSummary = async (
+  roomType: string,
+  selections: UserSelection,
+  artist: Artist | null
+): Promise<string> => {
+  const ai = getAIClient();
+  let prompt = `Write a sophisticated, 2-sentence architectural description for a ${roomType} design. 
+  Features: ${JSON.stringify(selections)}. `;
+  
+  if (artist) {
+    prompt += `Style inspiration: ${artist.name}. `;
+  }
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: prompt,
+  });
+
+  return response.text || "A bespoke design concept.";
 };
 
 export const generateLayoutSuggestion = async (
-  roomType: RoomType, 
-  width: number, 
-  depth: number, 
-  items: FurnitureItem[],
-  colorPalette: string
-): Promise<LayoutSuggestion> => {
-  const ai = getAI();
-  const itemNames = items.map(i => i.name).join(', ');
+  roomType: string,
+  width: number,
+  depth: number,
+  items: PlannerItem[],
+  palette: string
+): Promise<{ reasoning: string; items: { name: string; x: number; y: number; rotation: number }[] }> => {
+  const ai = getAIClient();
   
-  const prompt = `
-    You are an expert architect and interior planner. 
-    I have a ${roomType} with dimensions ${width}ft x ${depth}ft.
-    The color palette is ${colorPalette}.
-    
-    I need to place the following items: ${itemNames}.
-    
-    Determine the optimal 2D position for these items.
-    Items should be arranged logically (e.g., bed against wall, TV opposite sofa, fridge accessible).
-  `;
+  const itemsList = items.map(i => `${i.name} (${i.width}x${i.depth})`).join(", ");
+  const prompt = `I have a ${roomType} with dimensions ${width}ft x ${depth}ft. 
+  I have these furniture items to place: ${itemsList}. 
+  Suggest an optimal layout. Return coordinates x, y as percentages (0-100) of the room dimensions, and rotation (0, 90, 180, 270).
+  Consider flow, functionality, and the aesthetic: ${palette}.
+  Also provide a short reasoning (max 20 words).`;
 
-  const schema = {
-    type: Type.OBJECT,
-    properties: {
-      items: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            name: { type: Type.STRING },
-            x: { type: Type.NUMBER, description: "Percentage position (0-100) of x-axis" },
-            y: { type: Type.NUMBER, description: "Percentage position (0-100) of y-axis" },
-            rotation: { type: Type.NUMBER, description: "Rotation in degrees (0, 90, 180, 270)" }
-          },
-          required: ["name", "x", "y", "rotation"]
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          reasoning: { type: Type.STRING },
+          items: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                name: { type: Type.STRING },
+                x: { type: Type.NUMBER },
+                y: { type: Type.NUMBER },
+                rotation: { type: Type.NUMBER }
+              }
+            }
+          }
         }
-      },
-      reasoning: { type: Type.STRING }
-    },
-    required: ["items", "reasoning"]
-  };
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: schema
       }
-    });
-    
-    const text = response.text;
-    if (!text) throw new Error("No text returned");
-    
-    return JSON.parse(text) as LayoutSuggestion;
-  } catch (error) {
-    console.error("Gemini Layout Generation Error:", error);
-    throw error;
-  }
+    }
+  });
+  
+  return JSON.parse(response.text);
 };
 
-export const generateVeoVideo = async (
-  imageBase64: string, 
-  prompt: string, 
-  aspectRatio: '16:9' | '9:16' = '16:9'
-): Promise<string> => {
-    // Check for API Key selection (Required for Veo)
-    const win = window as any;
-    if (win.aistudio) {
-        const hasKey = await win.aistudio.hasSelectedApiKey();
-        if (!hasKey) {
-            await win.aistudio.openSelectKey();
-        }
-    }
+export const getChatResponse = async (history: { role: string, parts: { text: string }[] }[], message: string): Promise<string> => {
+    const ai = getAIClient();
+    // Filter history to ensure role is either 'user' or 'model'
+    const validHistory = history.map(h => ({
+        role: h.role === 'user' ? 'user' : 'model',
+        parts: h.parts
+    }));
     
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
-      throw new Error("API Key is missing. Please set the API_KEY environment variable.");
-    }
+    const chat = ai.chats.create({
+        model: 'gemini-3-flash-preview',
+        history: validHistory as any
+    });
+    const result = await chat.sendMessage({ message });
+    return result.text;
+};
 
-    // MANDATORY: Create fresh instance right before call as per guidelines
-    const veoAi = new GoogleGenAI({ apiKey });
+export const generateVeoVideo = async (image: string, prompt: string, aspectRatio: '16:9' | '9:16'): Promise<string> => {
+    const ai = getAIClient();
+    
+    // Convert base64 data URL to raw base64 string
+    // Format: data:image/png;base64,....
+    const base64Data = image.split(',')[1];
+    const mimeType = image.substring(image.indexOf(':') + 1, image.indexOf(';'));
 
-    // Extract mimeType and clean base64 data
-    const matches = imageBase64.match(/^data:(.+);base64,(.+)$/);
-    const mimeType = matches ? matches[1] : 'image/png';
-    const cleanData = matches ? matches[2] : imageBase64;
-
-    let operation = await veoAi.models.generateVideos({
-      model: 'veo-3.1-fast-generate-preview',
-      prompt: prompt || "Cinematic camera movement, high quality, photorealistic interior design tour.",
-      image: {
-        imageBytes: cleanData,
-        mimeType: mimeType,
-      },
-      config: {
-        numberOfVideos: 1,
-        resolution: '720p',
-        aspectRatio: aspectRatio
-      }
+    let operation = await ai.models.generateVideos({
+        model: 'veo-3.1-fast-generate-preview',
+        prompt: prompt,
+        image: {
+            imageBytes: base64Data,
+            mimeType: mimeType,
+        },
+        config: {
+            numberOfVideos: 1,
+            aspectRatio: aspectRatio,
+            resolution: '720p'
+        }
     });
 
-    // Poll for completion
     while (!operation.done) {
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      operation = await veoAi.operations.getVideosOperation({operation: operation});
-    }
-
-    if (operation.error) {
-        throw new Error(`Video generation failed: ${operation.error.message}`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        operation = await ai.operations.getVideosOperation({ operation: operation });
     }
 
     const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
-    if (!videoUri) {
-        throw new Error("No video URI returned from Veo.");
-    }
-
-    const videoResponse = await fetch(`${videoUri}&key=${apiKey}`);
-    if (!videoResponse.ok) {
-        throw new Error("Failed to download video content.");
-    }
+    if (!videoUri) throw new Error("Video generation failed");
     
-    const blob = await videoResponse.blob();
-    return URL.createObjectURL(blob);
-};
-
-export const getChatResponse = async (history: {role: string, parts: {text: string}[]}[], message: string): Promise<string> => {
-  try {
-    const ai = getAI();
-    const chat = ai.chats.create({
-      model: 'gemini-2.5-flash',
-      history: history,
-      config: {
-        systemInstruction: `You are the "Pietra Plume AI Concierge", a sophisticated and helpful interior design consultant for Pietra Plume.
-        
-        Key Business Facts you MUST know and use in answers:
-        1. We use an 'Agile Methodology' adapted from software development to deliver renovations in exactly 15 days.
-        2. We offer a 'Paid Family Holiday' (to Bali, Maldives, or Dubai) for the client's family during the 15-day execution phase so they escape the dust and noise.
-        3. We are premium, efficient, and transparent.
-        
-        Your Tone: Professional, warm, knowledgeable, concise (keep answers under 80 words if possible).
-        
-        Capabilities:
-        - Advise on color palettes (e.g., matching a grey sofa).
-        - Explain the Agile process (Sprints, Backlog, Definition of Done).
-        - Discuss our tools (Design Studio, Video Generator, Smart Planner).
-        
-        If asked to book a consultation, guide them to click the 'Consult' button in the navbar.
-        `
-      }
-    });
-
-    const result = await chat.sendMessage({ message });
-    return result.text || "I apologize, I didn't catch that. Could you rephrase?";
-  } catch (error) {
-    console.error("Chat Error:", error);
-    throw error;
-  }
+    // Append API key for frontend consumption as per docs
+    return `${videoUri}&key=${process.env.API_KEY}`;
 };

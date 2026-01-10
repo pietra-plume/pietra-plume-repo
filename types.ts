@@ -1,13 +1,74 @@
-export enum RoomType {
-  LIVING_ROOM = 'Living Room',
-  BEDROOM = 'Master Bedroom',
-  KITCHEN = 'Modular Kitchen',
-  DINING = 'Dining Area',
-  BALCONY = 'Balcony',
-  HOME_OFFICE = 'Home Office'
+export interface DesignProfile {
+  archetype: string;
+  pietraRatio: number; // 0-100 (Solid/Stone)
+  plumeRatio: number;  // 0-100 (Light/Feather)
+  palette: string[];
+  materials: string[];
+  philosophy: string;
+  sustainabilityScore: number; // 0-100
+  lightingType: string;
 }
 
-export interface DesignOption {
+export interface Service {
+  id: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  icon: string;
+  image: string;
+  galleryUrls: string[];
+  focusAreas: string[];
+  featured?: boolean;
+}
+
+export interface PortfolioItem {
+  id: number;
+  title: string;
+  category: string;
+  imageUrl: string;
+  galleryUrls: string[];
+  description: string;
+  pietraRatio: number;
+  plumeRatio: number;
+  materials: string[];
+  location: string;
+  year: string;
+}
+
+export interface HolidayPackage {
+  id: string;
+  name: string;
+  location: string;
+  description: string;
+  imageUrl: string;
+  galleryUrls: string[];
+}
+
+export interface TimelinePhase {
+  label: string;
+  duration: string;
+  description: string;
+  detailedContent?: string;
+  isSabbatical?: boolean;
+}
+
+export interface ProjectTypeTimeline {
+  id: string;
+  title: string;
+  totalDuration: string;
+  phases: TimelinePhase[];
+}
+
+export enum RoomType {
+  LIVING_ROOM = "Living Room",
+  BEDROOM = "Bedroom",
+  KITCHEN = "Kitchen",
+  DINING = "Dining",
+  BALCONY = "Balcony",
+  HOME_OFFICE = "Home Office"
+}
+
+export interface Option {
   id: string;
   name: string;
   value: string;
@@ -15,61 +76,38 @@ export interface DesignOption {
 
 export interface CategoryOptions {
   label: string;
-  options: DesignOption[];
-}
-
-export interface RoomConfiguration {
-  [key: string]: CategoryOptions;
+  options: Option[];
 }
 
 export interface UserSelection {
-  [categoryKey: string]: string; // stores the selected value
+  [category: string]: string;
 }
 
 export interface Artist {
   id: string;
   name: string;
-  period: string;
   styleDescription: string;
 }
 
-export interface ArtCategory {
-  id: string;
-  label: string;
-  artists: Artist[];
-}
-
-// New Types for Smart Planner
-export interface FurnitureItem {
-  id: string;
-  name: string;
-  width: number; // in feet
-  depth: number; // in feet
-  icon: string; // lucide icon name
-  defaultColor: string;
-}
-
-export interface PlannerItem extends FurnitureItem {
-  instanceId: string;
-  x: number; // percentage (0-100)
-  y: number; // percentage (0-100)
-  rotation: number; // degrees
-}
-
-export interface LayoutSuggestion {
-  items: {
-    name: string;
-    x: number;
-    y: number;
-    rotation: number;
-  }[];
-  reasoning: string;
-}
-
-// Shared Design Type
 export interface GeneratedDesign {
   roomType: RoomType;
   imageUrl: string;
   palette: string;
   attributes: string;
+}
+
+export interface FurnitureItem {
+  id: string;
+  name: string;
+  icon: string;
+  width: number;
+  depth: number;
+  defaultColor?: string;
+}
+
+export interface PlannerItem extends FurnitureItem {
+  instanceId: string;
+  x: number;
+  y: number;
+  rotation: number;
 }

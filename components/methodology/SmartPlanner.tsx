@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { RoomType, FurnitureItem, PlannerItem, GeneratedDesign } from '../types';
-import { FURNITURE_CATALOG } from '../constants';
-import { generateLayoutSuggestion } from '../services/geminiService';
+import { RoomType, FurnitureItem, PlannerItem, GeneratedDesign } from '../../types';
+import { FURNITURE_CATALOG } from '../../constants';
+import { generateLayoutSuggestion } from '../../services/geminiService';
 import { 
   Maximize, 
   Move, 
