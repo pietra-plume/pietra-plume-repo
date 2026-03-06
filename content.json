@@ -1,0 +1,151 @@
+{
+  "hero": {
+    "topHeading": "Mastering the Art of the Possible",
+    "mainHeading": "Where Stone Meets Spirit.",
+    "description": "We weave the permanence of earth with the fluidity of light, manifesting bespoke realities that redefine the boundaries of architectural potential.",
+    "image": "https://ik.imagekit.io/pietraplume/images/pietra-asset-001.jpg"
+  },
+  "philosophy": {
+    "subHeading": "Our Methodology",
+    "mainHeading": "The Alchemical Balance",
+    "pietraTitle": "Pietra",
+    "pietraDescription": "The foundation. Raw materials, historical weight, and the unyielding strength of stone, marble, and ancient wood—nature's core manifested in physical form.",
+    "pietraImage": "https://ik.imagekit.io/pietraplume/images/pietra-asset-002.jpg",
+    "plumeTitle": "Plume",
+    "plumeDescription": "The spirit. Fluidity, transparency, and the ethereal dance of light through feathers and fabric. The breath of a structure that turns monoliths into living experiences.",
+    "plumeImage": "https://ik.imagekit.io/pietraplume/images/pietra-asset-003.jpg",
+    "quote": "We don't just build structures; we manifest possibilities that defy the weight of tradition while honoring its soul."
+  },
+  "agile": {
+    "subHeading": "The Plume Path",
+    "mainHeading": "Architectural Agility.",
+    "description": "We have abandoned the rigid silos of traditional architecture. By adhering to modern IT delivery principles, we provide a delivery model where the blueprint is a living document, and the client is a co-developer.",
+    "principles": [
+      {
+        "step": "01",
+        "title": "Discovery Sprints",
+        "description": "We treat your vision as a set of dynamic 'User Stories'. Instead of rigid static briefs, we define the core experience and iterate on the volume through rapid conceptual prototyping."
+      },
+      {
+        "step": "02",
+        "title": "Iterative Manifestation",
+        "description": "Borrowing from the CI/CD pipeline of high-performance software, we deliver architectural 'builds' in phases. This allows for evolving material choices and light-path adjustments as the space takes shape."
+      },
+      {
+        "step": "03",
+        "title": "Refactorable Design",
+        "description": "We welcome changes late in the process. By utilizing modular IT-driven principles in our structural engineering, our blueprints remain flexible—responding to new insights rather than resisting them."
+      },
+      {
+        "step": "04",
+        "title": "Responsive Environment",
+        "description": "The final deployment isn't the end. We view architecture as a living system that optimizes itself through usage data and human feedback loops, ensuring a permanent state of refinement."
+      }
+    ]
+  },
+  "departure": {
+    "subHeading": "The Sabbatical Program",
+    "mainHeading": "The Grand Departure.",
+    "description": "We believe the stress of execution should never touch the client. When our Agile Sprints begin, we invite you to depart. Choose a sanctuary from our curated Indian heritage partners; while you find yourself, we manifest your home.",
+    "holidays": [
+      {
+        "id": "himalayan",
+        "name": "The Spiti Monolith",
+        "location": "Spiti Valley, Himachal Pradesh",
+        "description": "Brutalist serenity in the high desert. A sanctuary of local stone and glass looking over ancient monasteries.",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-028.jpg"
+      },
+      {
+        "id": "kerala",
+        "name": "The Emerald Plume",
+        "location": "Kumarakom, Kerala",
+        "description": "Weightless architecture suspended over the backwaters, where traditional teak meets ethereal translucency.",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-032.jpg"
+      },
+      {
+        "id": "rajasthan",
+        "name": "The Amber Stillness",
+        "location": "Jaisalmer, Rajasthan",
+        "description": "Ancient golden sandstone recontextualized into a modern nomadic fortress of silence.",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-036.jpg"
+      }
+    ]
+  },
+  "portfolio": {
+    "subHeading": "Selected Works",
+    "mainHeading": "Crafting the Indelible.",
+    "description": "A curated odyssey through spaces where gravity is challenged and heritage is re-imagined.",
+    "projects": [
+      {
+        "id": 1,
+        "title": "The Obsidian Pavilion",
+        "category": "Residential",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-004.jpg",
+        "description": "A Masterclass in contrast. The Obsidian Pavilion utilizes volcanic basalt monoliths to anchor a structure that appears to float over the landscape through invisible glazing techniques.",
+        "location": "Reykjavík, Iceland",
+        "year": "2023"
+      },
+      {
+        "id": 2,
+        "title": "Ethereal Office",
+        "category": "Commercial",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-007.jpg",
+        "description": "Redefining corporate permanence. This workspace transitions from heavy Carrara marble public zones to airy, cloud-like collaborative spaces separated only by diffused light.",
+        "location": "Milan, Italy",
+        "year": "2022"
+      },
+      {
+        "id": 3,
+        "title": "Lighthouse Retreat",
+        "category": "Hospitality",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-010.jpg",
+        "description": "A coastal sanctuary that honors the rugged shoreline. Local limestone provides the thermal mass, while a \"Plume\" roof structure allows the breeze to pass through the living quarters.",
+        "location": "Paros, Greece",
+        "year": "2024"
+      },
+      {
+        "id": 4,
+        "title": "The Marble Archive",
+        "category": "Cultural",
+        "imageUrl": "https://ik.imagekit.io/pietraplume/images/pietra-asset-013.jpg",
+        "description": "A monolithic library designed for a century of silence. Massive marble light-wells penetrate the structural core, bringing \"spirit\" into the deep earth of the archive.",
+        "location": "Kyoto, Japan",
+        "year": "2021"
+      }
+    ]
+  },
+  "services": {
+    "subHeading": "Our Expertise",
+    "mainHeading": "Ethereal Provisions.",
+    "services": [
+      {
+        "id": "res",
+        "title": "Residential Architecture",
+        "description": "Crafting private sanctuaries that harmonize ancestral weight with modern translucency. We build homes that breathe.",
+        "longDescription": "Our residential approach is rooted in the \"Pietra\" of heritage and the \"Plume\" of the future. We utilize advanced solar-path modeling to ensure that even the heaviest stone monoliths are kissed by ethereal light at precisely the right moments of the day. Every residence is a bespoke ecosystem designed for longitudinal well-being.",
+        "image": "https://ik.imagekit.io/pietraplume/images/pietra-asset-020.jpg"
+      },
+      {
+        "id": "com",
+        "title": "Commercial Curation",
+        "description": "Sculpting high-prestige environments for brands that value permanence. Where corporate identity meets alchemical form.",
+        "longDescription": "In the commercial realm, we define permanence through materiality. We design offices and flagships that act as physical manifestations of a brand's soul. By balancing heavy structural integrity with agile interior \"Plume\" elements, we create spaces that can evolve as rapidly as the markets they serve.",
+        "image": "https://ik.imagekit.io/pietraplume/images/pietra-asset-008.jpg"
+      },
+      {
+        "id": "bes",
+        "title": "Bespoke Materiality",
+        "description": "The curation of the tactile. We design custom furniture and interior elements that explore the dialogue between raw monoliths and ethereal transparency.",
+        "longDescription": "Materiality is the primary language of the Pietra & Plume studio. We do not merely specify materials; we curate their journey from subterranean quarries and secretive artisan workshops across the globe. This featured discipline focuses on the \"Touch-Points\" of architecture—those intimate moments where the human body interfaces with the structural manifest.",
+        "image": "https://ik.imagekit.io/pietraplume/images/pietra-asset-023.jpg"
+      },
+      {
+        "id": "urb",
+        "title": "Urban Alchemy",
+        "description": "Large-scale interventions designed to reconnect historical urban fabrics with sustainable, light-filled futures.",
+        "longDescription": "Our Urban Alchemy division treats the city as a living organism. We specialize in sensitive interventions that respect historical \"Pietra\" context while injecting modern \"Plume\" vitality. We design public spaces that facilitate community \"sparks\" through strategic lighting and structural lightness.",
+        "image": "https://ik.imagekit.io/pietraplume/images/pietra-asset-024.jpg"
+      }
+    ]
+  }
+}
