@@ -41,7 +41,8 @@ const services: Service[] = [
     image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-020.jpg',
     galleryUrls: [
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-020.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-001.jpg'
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-001.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-021.jpg'
     ],
     focusAreas: ['Bespoke Sanctuary Design', 'Thermal Mass Optimization', 'Luminous Living Patterns'],
     featured: true
@@ -66,7 +67,7 @@ const services: Service[] = [
     description: 'The curation of the tactile. We design custom furniture and interior elements that explore the dialogue between raw monoliths and ethereal transparency.',
     longDescription: 'Materiality is the primary language of the Pietra & Plume studio. We do not merely specify materials; we curate their journey from subterranean quarries and secretive artisan workshops across the globe. This featured discipline focuses on the "Touch-Points" of architecture—those intimate moments where the human body interfaces with the structural manifest. We specialize in the impossible: door handles of cast bronze fused with volcanic glass, tables of suspended stone that appear to defy gravity, and walls of woven light that provide privacy without mass. Each piece is a unique artifact, serialized and integrated into the architectural narrative of the space.',
     icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-016.jpg',
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-023.jpg',
     galleryUrls: bespokeGallery.map(item => item.url),
     focusAreas: ['Global Artisan Procurement', 'Experimental Sculptural Joinery', 'Tactile Interaction Design', 'Serialized Interior Artifacts', 'Light-Permeable Solid Surfaces'],
     featured: true
@@ -91,6 +92,43 @@ const services: Service[] = [
 const Services: React.FC = () => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [activeGalleryItem, setActiveGalleryItem] = useState<MaterialGalleryItem | null>(null);
+  const [settings, setSettings] = useState<any>({
+    services_tag: 'Our Expertise',
+    services_heading: 'Ethereal Provisions',
+    services_body: 'From monolithic structural design to ethereal interior atmospheres, we provide a full spectrum of architectural services.',
+    serv_1_title: 'Residential Architecture',
+    serv_1_desc: 'Crafting private sanctuaries that harmonize ancestral weight with modern translucency. We build homes that breathe.',
+    serv_1_img: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-020.jpg',
+    serv_2_title: 'Commercial Curation',
+    serv_2_desc: 'Sculpting high-prestige environments for brands that value permanence. Where corporate identity meets alchemical form.',
+    serv_2_img: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-008.jpg',
+    serv_3_title: 'Bespoke Materiality',
+    serv_3_desc: 'The curation of the tactile. We design custom furniture and interior elements that explore the dialogue between raw monoliths and ethereal transparency.',
+    serv_3_img: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-023.jpg',
+    serv_4_title: 'Urban Alchemy',
+    serv_4_desc: 'Large-scale interventions designed to reconnect historical urban fabrics with sustainable, light-filled futures.',
+    serv_4_img: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-024.jpg'
+  });
+
+  const dynamicServices = services.map((s, i) => ({
+    ...s,
+    title: settings[`serv_${i+1}_title`] || s.title,
+    description: settings[`serv_${i+1}_desc`] || s.description,
+    image: settings[`serv_${i+1}_img`] || s.image
+  }));
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        setSettings((prev: any) => ({ ...prev, ...data }));
+      } catch (err) {
+        console.error('Failed to fetch settings', err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     if (selectedService) {
@@ -124,12 +162,15 @@ const Services: React.FC = () => {
     <section id="services" className="py-24 px-6 bg-[#fdfcfb] scroll-mt-32">
       <div className="max-w-7xl mx-auto">
         <div className="mb-20 space-y-4">
-          <h4 className="text-xs tracking-[0.5em] uppercase text-stone-400">Our Expertise</h4>
-          <h2 className="serif text-5xl font-light">Ethereal <span className="italic">Provisions</span>.</h2>
+          <h4 className="text-xs tracking-[0.5em] uppercase text-stone-400">{settings.services_tag}</h4>
+          <h2 className="serif text-5xl font-light">{settings.services_heading}</h2>
+          <p className="text-stone-500 font-light max-w-2xl leading-relaxed">
+            {settings.services_body}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {services.map((service) => (
+          {dynamicServices.map((service) => (
             <div 
               key={service.id} 
               onClick={() => setSelectedService(service)}

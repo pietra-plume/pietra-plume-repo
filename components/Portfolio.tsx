@@ -1,81 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PortfolioItem } from '../types';
 
-const projects: PortfolioItem[] = [
-  { 
-    id: 1, 
-    title: 'The Obsidian Pavilion', 
-    category: 'Residential', 
-    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-004.jpg',
-    galleryUrls: [
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-004.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-005.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-006.jpg'
-    ],
-    description: 'A Masterclass in contrast. The Obsidian Pavilion utilizes volcanic basalt monoliths to anchor a structure that appears to float over the landscape through invisible glazing techniques.',
-    pietraRatio: 75,
-    plumeRatio: 25,
-    materials: ['Basalt Monoliths', 'Invisible Glazing', 'Shadow Maple'],
-    location: 'Reykjavík, Iceland',
-    year: '2023'
-  },
-  { 
-    id: 2, 
-    title: 'Ethereal Office', 
-    category: 'Commercial', 
-    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-007.jpg',
-    galleryUrls: [
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-007.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-008.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-009.jpg'
-    ],
-    description: 'Redefining corporate permanence. This workspace transitions from heavy Carrara marble public zones to airy, cloud-like collaborative spaces separated only by diffused light.',
-    pietraRatio: 40,
-    plumeRatio: 60,
-    materials: ['Carrara Marble', 'Diffused Polycarbonate', 'Brushed Aluminum'],
-    location: 'Milan, Italy',
-    year: '2022'
-  },
-  { 
-    id: 3, 
-    title: 'Lighthouse Retreat', 
-    category: 'Hospitality', 
-    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-010.jpg',
-    galleryUrls: [
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-010.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-011.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-012.jpg'
-    ],
-    description: 'A coastal sanctuary that honors the rugged shoreline. Local limestone provides the thermal mass, while a "Plume" roof structure allows the breeze to pass through the living quarters.',
-    pietraRatio: 50,
-    plumeRatio: 50,
-    materials: ['Local Limestone', 'Bleached Oak', 'Sailcloth Membranes'],
-    location: 'Paros, Greece',
-    year: '2024'
-  },
-  { 
-    id: 4, 
-    title: 'The Marble Archive', 
-    category: 'Cultural', 
-    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-013.jpg',
-    galleryUrls: [
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-013.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-014.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-015.jpg'
-    ],
-    description: 'A monolithic library designed for a century of silence. Massive marble light-wells penetrate the structural core, bringing "spirit" into the deep earth of the archive.',
-    pietraRatio: 90,
-    plumeRatio: 10,
-    materials: ['Statuary Marble', 'Architectural Concrete', 'Cast Bronze'],
-    location: 'Kyoto, Japan',
-    year: '2021'
-  },
-];
-
 const Portfolio: React.FC = () => {
+  const [projects, setProjects] = useState<PortfolioItem[]>([]);
   const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('/api/projects');
+        const data = await res.json();
+        if (data && data.length > 0) {
+          setProjects(data);
+        } else {
+          // Fallback if DB is empty
+          setProjects([]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch projects', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   useEffect(() => {
     if (selectedProject) {
@@ -156,8 +108,13 @@ const Portfolio: React.FC = () => {
           </div>
         </div>
 
-        {/* Horizontally Scrollable Gallery */}
-        <div className="relative group">
+        {isLoading ? (
+          <div className="h-[400px] flex items-center justify-center">
+            <div className="w-8 h-8 border-t-2 border-stone-800 rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          /* Horizontally Scrollable Gallery */
+          <div className="relative group">
           <div 
             ref={scrollContainerRef}
             onScroll={handleScroll}
@@ -176,6 +133,7 @@ const Portfolio: React.FC = () => {
                     src={project.imageUrl} 
                     alt={project.title} 
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-110 grayscale group-hover/card:grayscale-0"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-stone-900/10 group-hover/card:opacity-0 transition-opacity duration-500"></div>
                   
@@ -238,6 +196,7 @@ const Portfolio: React.FC = () => {
              </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Portfolio Detailed Modal */}
@@ -268,6 +227,7 @@ const Portfolio: React.FC = () => {
                       src={url} 
                       alt={`${selectedProject.title} view ${i + 1}`} 
                       className="w-full h-auto object-cover transition-transform duration-1000 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
                     />
                   </div>
                 ))}

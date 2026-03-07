@@ -3,6 +3,23 @@ import React, { useState, useEffect, useCallback } from 'react';
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [settings, setSettings] = useState<any>({
+    footer_logo_text: 'PIETRA & PLUME',
+    footer_logo_subtext: 'The art of possible'
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        setSettings((prev: any) => ({ ...prev, ...data }));
+      } catch (err) {
+        console.error('Failed to fetch settings', err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,10 +77,10 @@ const Navbar: React.FC = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <span className={`serif text-2xl tracking-[0.2em] font-light group-hover:opacity-70 transition-all ${isMenuOpen || isScrolled ? 'text-stone-900' : 'text-white'}`}>
-              PIETRA & PLUME
+              {settings.footer_logo_text || 'PIETRA & PLUME'}
             </span>
             <span className={`text-[9px] tracking-[0.35em] uppercase opacity-60 text-center ${isMenuOpen || isScrolled ? 'text-stone-600' : 'text-stone-200'}`}>
-              The art of possible
+              {settings.footer_logo_subtext || 'The art of possible'}
             </span>
           </div>
           

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Philosophy from './components/Philosophy';
@@ -7,12 +8,33 @@ import Services from './components/Services';
 import AgileMethodology from './components/AgileMethodology';
 import TheDeparture from './components/TheDeparture';
 import Footer from './components/Footer';
+import AdminPortal from './components/AdminPortal';
 import { GOOGLE_SHEET_WEBHOOK_URL } from './constants';
 
-const App: React.FC = () => {
+const MainLayout: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [settings, setSettings] = useState<any>({
+    contact_heading: 'The Design Dialogue',
+    contact_body: 'Whether you possess a definitive blueprint or merely a whisper of intent, we invite you to cross the threshold.',
+    contact_email: 'contactus@pietraplume.com',
+    contact_phone: '',
+    contact_address: ''
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        setSettings((prev: any) => ({ ...prev, ...data }));
+      } catch (err) {
+        console.error('Failed to fetch settings', err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,22 +85,38 @@ const App: React.FC = () => {
             {/* Left Column: Firm Details */}
             <div className="space-y-16">
               <div className="space-y-6">
-                <h4 className="text-[10px] tracking-[0.5em] uppercase text-stone-400">Initiate Connection</h4>
+                <h4 className="text-[10px] tracking-[0.5em] uppercase text-stone-400">{settings.contact_tag || 'Initiate Connection'}</h4>
                 <h2 className="serif text-6xl md:text-7xl font-light leading-tight text-stone-900">
-                  The Design <br/><span className="italic">Dialogue</span>.
+                  {settings.contact_heading}
                 </h2>
                 <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">
-                  Whether you possess a definitive blueprint or merely a whisper of intent, we invite you to cross the threshold.
+                  {settings.contact_body}
                 </p>
               </div>
 
-              <div className="pt-12 border-t border-stone-100">
+              <div className="pt-12 border-t border-stone-100 grid gap-12">
                 <div className="space-y-4">
                   <span className="text-[9px] tracking-[0.4em] uppercase text-stone-900 font-bold">Inquiries</span>
                   <p className="text-sm text-stone-500 font-light">
-                    contactus@pietraplume.com
+                    {settings.contact_email}
                   </p>
                 </div>
+                {settings.contact_phone && (
+                  <div className="space-y-4">
+                    <span className="text-[9px] tracking-[0.4em] uppercase text-stone-900 font-bold">Communication</span>
+                    <p className="text-sm text-stone-500 font-light">
+                      {settings.contact_phone}
+                    </p>
+                  </div>
+                )}
+                {settings.contact_address && (
+                  <div className="space-y-4">
+                    <span className="text-[9px] tracking-[0.4em] uppercase text-stone-900 font-bold">Sanctum Location</span>
+                    <p className="text-sm text-stone-500 font-light whitespace-pre-wrap">
+                      {settings.contact_address}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -157,6 +195,17 @@ const App: React.FC = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainLayout />} />
+        <Route path="/admin" element={<AdminPortal />} />
+      </Routes>
+    </Router>
   );
 }
 

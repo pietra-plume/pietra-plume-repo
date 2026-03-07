@@ -1,7 +1,7 @@
 import { RoomType } from './types';
 
 // Webhook for the "Begin the Dialogue" and Consultation forms
-export const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyPNKkK1kuaWLl2OWGxggn83c0s-JVdCKaAioqVDx31xeXQAONhpy1piHMAs2Nifxx3/exec";
+export const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwTqKjTrqJheaXO_JQqkZbHm1wa8FgPjeUXbb_kG9R0CJigqNcwj9uBmqcSL8W0laLq/exec";
 
 // Configuration for Design Studio Room Attributes
 export const ROOM_CONFIGS = {
