@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { HolidayPackage, ProjectTypeTimeline, TimelinePhase } from '../types';
-import { API_VERSION } from '../constants';
 
 const holidays: HolidayPackage[] = [
   {
@@ -8,11 +7,10 @@ const holidays: HolidayPackage[] = [
     name: 'The Spiti Monolith',
     location: 'Spiti Valley, Himachal Pradesh',
     description: 'Brutalist serenity in the high desert. A sanctuary of local stone and glass looking over ancient monasteries.',
-    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-028.jpg',
+    imageUrl: 'https://ik.imagekit.io/pietraplume/pietra-asset-028.jpg',
     galleryUrls: [
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-028.jpg',
+      'https://ik.imagekit.io/pietraplume/pietra-asset-028.jpg',
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-029.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-030.jpg',
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-031.jpg'
     ]
   },
@@ -25,7 +23,6 @@ const holidays: HolidayPackage[] = [
     galleryUrls: [
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-032.jpg',
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-033.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-034.jpg',
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-035.jpg'
     ]
   },
@@ -38,7 +35,6 @@ const holidays: HolidayPackage[] = [
     galleryUrls: [
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-036.jpg',
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-037.jpg',
-      'https://ik.imagekit.io/pietraplume/images/pietra-asset-038.jpg',
       'https://ik.imagekit.io/pietraplume/images/pietra-asset-039.jpg'
     ]
   }
@@ -144,18 +140,10 @@ const timelines: ProjectTypeTimeline[] = [
 ];
 
 const TheDeparture: React.FC = () => {
-  const [content, setContent] = useState<any>(null);
   const [activeTimeline, setActiveTimeline] = useState(timelines[0]);
   const [selectedPhase, setSelectedPhase] = useState<TimelinePhase | null>(null);
   const [selectedHoliday, setSelectedHoliday] = useState<HolidayPackage | null>(null);
   const [isChanging, setIsChanging] = useState(false);
-
-  useEffect(() => {
-    fetch(`/api/content?v=${API_VERSION}`)
-      .then(res => res.json())
-      .then(data => setContent(data.departure))
-      .catch(err => console.error('Failed to fetch departure content', err));
-  }, []);
 
   useEffect(() => {
     if (selectedHoliday || selectedPhase) {
@@ -196,20 +184,18 @@ const TheDeparture: React.FC = () => {
     }
   };
 
-  if (!content) return null;
-
   return (
     <section id="departure" className="py-24 px-6 bg-[#1a1a1a] text-white scroll-mt-32">
       <div className="max-w-7xl mx-auto">
         {/* Intro Section */}
         <div className="grid lg:grid-cols-2 gap-20 items-center mb-24">
           <div className="space-y-8">
-            <h4 className="text-xs tracking-[0.5em] uppercase text-stone-500">{content.subHeading}</h4>
+            <h4 className="text-xs tracking-[0.5em] uppercase text-stone-500">The Sabbatical Program</h4>
             <h2 className="serif text-5xl md:text-7xl font-light leading-tight">
-              {content.mainHeading}
+              The Grand <span className="italic">Departure</span>.
             </h2>
             <p className="text-stone-400 font-light leading-relaxed text-lg">
-              {content.description}
+              We believe the stress of execution should never touch the client. When our Agile Sprints begin, we invite you to depart. Choose a sanctuary from our curated Indian heritage partners; while you find yourself, we manifest your home. 
             </p>
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-4 group cursor-pointer">
@@ -224,7 +210,7 @@ const TheDeparture: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-6">
-            {content.holidays.map((h: any) => (
+            {holidays.map((h) => (
               <div 
                 key={h.id} 
                 onClick={() => setSelectedHoliday(h)}

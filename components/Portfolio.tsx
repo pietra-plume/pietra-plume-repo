@@ -1,19 +1,81 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PortfolioItem } from '../types';
-import { API_VERSION } from '../constants';
+
+const projects: PortfolioItem[] = [
+  { 
+    id: 1, 
+    title: 'The Obsidian Pavilion', 
+    category: 'Residential', 
+    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-004.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-004.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-005.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-006.jpg'
+    ],
+    description: 'A Masterclass in contrast. The Obsidian Pavilion utilizes volcanic basalt monoliths to anchor a structure that appears to float over the landscape through invisible glazing techniques.',
+    pietraRatio: 75,
+    plumeRatio: 25,
+    materials: ['Basalt Monoliths', 'Invisible Glazing', 'Shadow Maple'],
+    location: 'Reykjavík, Iceland',
+    year: '2023'
+  },
+  { 
+    id: 2, 
+    title: 'Ethereal Office', 
+    category: 'Commercial', 
+    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-007.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-007.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-008.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-009.jpg'
+    ],
+    description: 'Redefining corporate permanence. This workspace transitions from heavy Carrara marble public zones to airy, cloud-like collaborative spaces separated only by diffused light.',
+    pietraRatio: 40,
+    plumeRatio: 60,
+    materials: ['Carrara Marble', 'Diffused Polycarbonate', 'Brushed Aluminum'],
+    location: 'Milan, Italy',
+    year: '2022'
+  },
+  { 
+    id: 3, 
+    title: 'Lighthouse Retreat', 
+    category: 'Hospitality', 
+    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-010.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-010.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-011.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-012.jpg'
+    ],
+    description: 'A coastal sanctuary that honors the rugged shoreline. Local limestone provides the thermal mass, while a "Plume" roof structure allows the breeze to pass through the living quarters.',
+    pietraRatio: 50,
+    plumeRatio: 50,
+    materials: ['Local Limestone', 'Bleached Oak', 'Sailcloth Membranes'],
+    location: 'Paros, Greece',
+    year: '2024'
+  },
+  { 
+    id: 4, 
+    title: 'The Marble Archive', 
+    category: 'Cultural', 
+    imageUrl: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-013.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-013.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-014.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-015.jpg'
+    ],
+    description: 'A monolithic library designed for a century of silence. Massive marble light-wells penetrate the structural core, bringing "spirit" into the deep earth of the archive.',
+    pietraRatio: 90,
+    plumeRatio: 10,
+    materials: ['Statuary Marble', 'Architectural Concrete', 'Cast Bronze'],
+    location: 'Kyoto, Japan',
+    year: '2021'
+  },
+];
 
 const Portfolio: React.FC = () => {
-  const [content, setContent] = useState<any>(null);
   const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  useEffect(() => {
-    fetch(`/api/content?v=${API_VERSION}`)
-      .then(res => res.json())
-      .then(data => setContent(data.portfolio))
-      .catch(err => console.error('Failed to fetch portfolio content', err));
-  }, []);
 
   useEffect(() => {
     if (selectedProject) {
@@ -60,19 +122,17 @@ const Portfolio: React.FC = () => {
     }
   };
 
-  if (!content) return null;
-
   return (
     <section id="portfolio" className="py-24 px-6 bg-[#fcfcfc] scroll-mt-32 overflow-hidden">
       <div className="max-w-[1600px] mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 px-4 md:px-0 gap-8">
           <div className="space-y-4">
-            <h4 className="text-xs tracking-[0.5em] uppercase text-stone-400">{content.subHeading}</h4>
-            <h2 className="serif text-5xl md:text-6xl font-light">{content.mainHeading}</h2>
+            <h4 className="text-xs tracking-[0.5em] uppercase text-stone-400">Selected Works</h4>
+            <h2 className="serif text-5xl md:text-6xl font-light">Crafting the <span className="italic underline underline-offset-8 decoration-stone-200">Indelible</span>.</h2>
           </div>
           <div className="flex flex-col items-end gap-6">
             <p className="max-w-md text-stone-500 font-light leading-relaxed text-sm text-right">
-              {content.description}
+              A curated odyssey through spaces where gravity is challenged and heritage is re-imagined. 
             </p>
             {/* Desktop Navigation Arrows */}
             <div className="hidden md:flex items-center gap-4">
@@ -104,7 +164,7 @@ const Portfolio: React.FC = () => {
             className="flex overflow-x-auto gap-12 pb-12 snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing px-4 md:px-0"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {content.projects.map((project: any) => (
+            {projects.map((project) => (
               <div 
                 key={project.id} 
                 onClick={() => setSelectedProject(project)}
@@ -169,7 +229,7 @@ const Portfolio: React.FC = () => {
              </div>
              <div className="flex items-center gap-4">
                <span className="text-[9px] tracking-widest text-stone-900 uppercase font-medium">
-                 {content.projects.length} Works Manifested
+                 {projects.length} Works Manifested
                </span>
                <div className="w-1.5 h-1.5 bg-stone-300 rounded-full"></div>
                <span className="text-[9px] tracking-widest text-stone-400 uppercase font-light">

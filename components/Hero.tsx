@@ -1,16 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { API_VERSION } from '../constants';
+import React from 'react';
 
 const Hero: React.FC = () => {
-  const [content, setContent] = useState<any>(null);
-
-  useEffect(() => {
-    fetch(`/api/content?v=${API_VERSION}`)
-      .then(res => res.json())
-      .then(data => setContent(data.hero))
-      .catch(err => console.error('Failed to fetch hero content', err));
-  }, []);
-
   const scrollTo = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -29,13 +19,11 @@ const Hero: React.FC = () => {
     }
   };
 
-  if (!content) return null;
-
   return (
     <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img 
-          src={content.image} 
+          src="https://ik.imagekit.io/pietraplume/images/pietra-asset-001.jpg" 
           alt="Luxury Architecture" 
           className="w-full h-full object-cover brightness-75 scale-105"
         />
@@ -43,13 +31,13 @@ const Hero: React.FC = () => {
       
       <div className="relative z-10 text-center text-white px-4 max-w-4xl">
         <h2 className="text-xs tracking-[0.6em] uppercase mb-6 animate-pulse font-light">
-          {content.topHeading}
+          Mastering the Art of the Possible
         </h2>
         <h1 className="serif text-5xl md:text-8xl font-light mb-8 leading-tight">
-          {content.mainHeading}
+          Where <span className="italic">Stone</span> Meets <span className="italic">Spirit</span>.
         </h1>
         <p className="text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto opacity-90 leading-relaxed mb-10">
-          {content.description}
+          We weave the permanence of earth with the fluidity of light, manifesting bespoke realities that redefine the boundaries of architectural potential.
         </p>
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <button 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Service } from '../types';
-import { API_VERSION } from '../constants';
 
 // Extended type for internal use to support specific gallery details
 interface MaterialGalleryItem {
@@ -32,17 +31,66 @@ const bespokeGallery: MaterialGalleryItem[] = [
   }
 ];
 
+const services: Service[] = [
+  {
+    id: 'res',
+    title: 'Residential Architecture',
+    description: 'Crafting private sanctuaries that harmonize ancestral weight with modern translucency. We build homes that breathe.',
+    longDescription: 'Our residential approach is rooted in the "Pietra" of heritage and the "Plume" of the future. We utilize advanced solar-path modeling to ensure that even the heaviest stone monoliths are kissed by ethereal light at precisely the right moments of the day. Every residence is a bespoke ecosystem designed for longitudinal well-being.',
+    icon: 'M12 3L2 12h3v8h14v-8h3L12 3z',
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-020.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-020.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-001.jpg'
+    ],
+    focusAreas: ['Bespoke Sanctuary Design', 'Thermal Mass Optimization', 'Luminous Living Patterns'],
+    featured: true
+  },
+  {
+    id: 'com',
+    title: 'Commercial Curation',
+    description: 'Sculpting high-prestige environments for brands that value permanence. Where corporate identity meets alchemical form.',
+    longDescription: 'In the commercial realm, we define permanence through materiality. We design offices and flagships that act as physical manifestations of a brand\'s soul. By balancing heavy structural integrity with agile interior "Plume" elements, we create spaces that can evolve as rapidly as the markets they serve.',
+    icon: 'M3 21h18M3 7h18M5 21V7m14 14V7M9 21v-4a1 1 0 011-1h4a1 1 0 011-1v4',
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-008.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-008.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-022.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-009.jpg'
+    ],
+    focusAreas: ['Corporate Alchemical Branding', 'Flow State Workspace', 'High-Prestige Materiality']
+  },
+  {
+    id: 'bes',
+    title: 'Bespoke Materiality',
+    description: 'The curation of the tactile. We design custom furniture and interior elements that explore the dialogue between raw monoliths and ethereal transparency.',
+    longDescription: 'Materiality is the primary language of the Pietra & Plume studio. We do not merely specify materials; we curate their journey from subterranean quarries and secretive artisan workshops across the globe. This featured discipline focuses on the "Touch-Points" of architecture—those intimate moments where the human body interfaces with the structural manifest. We specialize in the impossible: door handles of cast bronze fused with volcanic glass, tables of suspended stone that appear to defy gravity, and walls of woven light that provide privacy without mass. Each piece is a unique artifact, serialized and integrated into the architectural narrative of the space.',
+    icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-016.jpg',
+    galleryUrls: bespokeGallery.map(item => item.url),
+    focusAreas: ['Global Artisan Procurement', 'Experimental Sculptural Joinery', 'Tactile Interaction Design', 'Serialized Interior Artifacts', 'Light-Permeable Solid Surfaces'],
+    featured: true
+  },
+  {
+    id: 'urb',
+    title: 'Urban Alchemy',
+    description: 'Large-scale interventions designed to reconnect historical urban fabrics with sustainable, light-filled futures.',
+    longDescription: 'Our Urban Alchemy division treats the city as a living organism. We specialize in sensitive interventions that respect historical "Pietra" context while injecting modern "Plume" vitality. We design public spaces that facilitate community "sparks" through strategic lighting and structural lightness.',
+    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m5-12h1m-1 4h1m-1 4h1',
+    image: 'https://ik.imagekit.io/pietraplume/images/pietra-asset-024.jpg',
+    galleryUrls: [
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-024.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-025.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-026.jpg',
+      'https://ik.imagekit.io/pietraplume/images/pietra-asset-027.jpg'
+    ],
+    focusAreas: ['Historical Recontextualization', 'Public Spacing Sprints', 'Sustainable Urban Skeletons']
+  }
+];
+
 const Services: React.FC = () => {
-  const [content, setContent] = useState<any>(null);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [activeGalleryItem, setActiveGalleryItem] = useState<MaterialGalleryItem | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/content?v=${API_VERSION}`)
-      .then(res => res.json())
-      .then(data => setContent(data.services))
-      .catch(err => console.error('Failed to fetch services content', err));
-  }, []);
 
   useEffect(() => {
     if (selectedService) {
@@ -72,18 +120,16 @@ const Services: React.FC = () => {
     }
   };
 
-  if (!content) return null;
-
   return (
     <section id="services" className="py-24 px-6 bg-[#fdfcfb] scroll-mt-32">
       <div className="max-w-7xl mx-auto">
         <div className="mb-20 space-y-4">
-          <h4 className="text-xs tracking-[0.5em] uppercase text-stone-400">{content.subHeading}</h4>
-          <h2 className="serif text-5xl font-light">{content.mainHeading}</h2>
+          <h4 className="text-xs tracking-[0.5em] uppercase text-stone-400">Our Expertise</h4>
+          <h2 className="serif text-5xl font-light">Ethereal <span className="italic">Provisions</span>.</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {content.services.map((service: any) => (
+          {services.map((service) => (
             <div 
               key={service.id} 
               onClick={() => setSelectedService(service)}
